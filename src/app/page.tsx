@@ -1,132 +1,86 @@
-'use client';
+'use client'
+import { useState } from 'react';
 
-import { useState, useEffect } from 'react';
-import Head from 'next/head';
-
-const HomePage = () => {
-  const [username, setUsername] = useState('YemnaMehmood'); // Pre-fill with your GitHub username
-  const [userData, setUserData] = useState<any>(null);
+const GitHubProfileViewer = () => {
+  const [username, setUsername] = useState('');
+  const [profile, setProfile] = useState<any>(null);
   const [repos, setRepos] = useState<any[]>([]);
-  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  // Add your GitHub API key here (replace with your actual token)
-  const GITHUB_API_KEY = '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'; // Replace with your token
+  const handleSearch = async () => {
+    setError(''); // Clear previous errors
+    setProfile(null);
+    setRepos([]);
 
-  useEffect(() => {
-    const fetchGitHubData = async () => {
-      if (!username) return;
-
-      setLoading(true);
-      setError(''); // Reset error message
-
-      try {
-        // Create headers object and add Authorization with token
-        const headers: Record<string, string> = {
-          Authorization: `Bearer ${GITHUB_API_KEY}`,
-          Accept: 'application/vnd.github.v3+json',
-        };
-
-        // Fetch user profile data
-        const profileResponse = await fetch(`https://api.github.com/users/${username}`, { headers });
-        if (!profileResponse.ok) {
-          throw new Error("User not found");
-        }
-        const profileData = await profileResponse.json();
-        setUserData(profileData);
-
-        // Fetch user repositories data
-        const reposResponse = await fetch(`https://api.github.com/users/${username}/repos`, { headers });
-        if (!reposResponse.ok) {
-          throw new Error("Could not fetch repositories");
-        }
-        const reposData = await reposResponse.json();
-        setRepos(reposData);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setUserData(null);
-        setRepos([]);
-
-        // Handle error appropriately
-        if (error instanceof Error) {
-          setError(error.message); // Set error message
-        } else {
-          setError("An unknown error occurred"); // Fallback for unknown errors
-        }
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    // Trigger data fetch if a username is present
-    if (username) {
-      fetchGitHubData();
+    if (!username) {
+      setError('Please enter a GitHub username');
+      return;
     }
-  }, [username]);
 
-  const handleSearch = () => {
-    if (username.trim()) {
-      setUsername(username.trim()); // Avoid whitespace issues
+    try {
+      const profileResponse = await fetch(`https://api.github.com/users/${username}`);
+      if (!profileResponse.ok) {
+        throw new Error('User not found');
+      }
+      const profileData = await profileResponse.json();
+      setProfile(profileData);
+
+      const reposResponse = await fetch(profileData.repos_url);
+      const reposData = await reposResponse.json();
+      setRepos(reposData);
+    } catch (error: any) {
+      setError(error.message);
     }
   };
 
   return (
-    <>
-      <Head>
-        <title>GitHub Profile Viewer</title>
-      </Head>
-      <div className="container">
-        <h1>GitHub Profile Viewer</h1>
-
-        {/* Input for GitHub username */}
-        <div className="input-container">
-          <input
-            type="text"
-            placeholder="Enter GitHub username"
-            value={username}
-            onChange={(e) => setUsername(e.target.value)}
-            className="input-field"
-          />
-          <button onClick={handleSearch} className="search-button">
-            Search
-          </button>
-        </div>
-
-        {/* Loading Indicator */}
-        {loading && <p>Loading...</p>}
-        {error && <p style={{ color: 'red' }}>{error}</p>} {/* Display error message */}
-
-        {/* Display Profile and Repositories */}
-        {userData && (
-          <div className="profile-container">
-            <h2>{userData.name || 'No name available'}</h2>
-            <p>{userData.bio || 'No bio available'}</p>
-            <p>{userData.location || 'No location available'}</p>
-
-            <h3>Repositories:</h3>
-            <ul>
-              {repos.length > 0 ? (
-                repos.map((repo) => (
-                  <li key={repo.id}>
-                    <a href={repo.html_url} target="_blank" rel="noopener noreferrer">
-                      {repo.name}
-                    </a>
-                  </li>
-                ))
-              ) : (
-                <p>No repositories found.</p>
-              )}
-            </ul>
-          </div>
-        )}
-
-        {/* Footer */}
-        <footer>
-          &copy; {new Date().getFullYear()} GitHub profile viewer by Yemna Mehmood
-        </footer>
+    <div className="container">
+      <h1>GitHub Profile Viewer</h1>
+      <div className="input-container">
+        <input
+          type="text"
+          className="input-field"
+          placeholder="Enter GitHub username"
+          value={username}
+          onChange={(e) => setUsername(e.target.value)}
+        />
+        <button className="search-button" onClick={handleSearch}>
+          Search
+        </button>
       </div>
-    </>
+
+      {error && <p className="text-red-500">{error}</p>}
+
+      {profile && (
+        <div className="profile-container">
+          <h2>{profile.name || profile.login}</h2>
+          <p>Bio: {profile.bio || 'No bio available'}</p>
+          <p>Followers: {profile.followers}</p>
+          <p>Following: {profile.following}</p>
+          <p>Public Repos: {profile.public_repos}</p>
+          <a href={profile.html_url} target="_blank" rel="noopener noreferrer">
+            View Profile on GitHub
+          </a>
+        </div>
+      )}
+
+      {repos.length > 0 && (
+        <div className="repositories-container">
+          <h3>Repositories:</h3>
+          <ul>
+            {repos.map((repo) => (
+              <li key={repo.id}>
+                <a href={repo.html_url} target="_blank" rel="noopener noreferrer">
+                  {repo.name}
+                </a>
+                <p>{repo.description || 'No description'}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
   );
 };
 
-export default HomePage;
+export default GitHubProfileViewer;
