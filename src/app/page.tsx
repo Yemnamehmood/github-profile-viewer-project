@@ -46,8 +46,12 @@ const GitHubProfileViewer = () => {
       const reposResponse = await fetch(profileData.repos_url);
       const reposData: Repository[] = await reposResponse.json();
       setRepos(reposData);
-    } catch (error: any) {
-      setError(error.message);
+    } catch (error) {
+      if (error instanceof Error) {
+        setError(error.message);
+      } else {
+        setError('An unknown error occurred');
+      }
     }
   };
 
