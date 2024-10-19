@@ -1,11 +1,29 @@
 'use client'
 import { useState } from 'react';
 
+interface GitHubProfile {
+  login: string;
+  name: string;
+  bio: string | null;
+  followers: number;
+  following: number;
+  public_repos: number;
+  repos_url: string; // Add repos_url property
+  html_url: string;
+}
+
+interface Repository {
+  id: number;
+  name: string;
+  description: string | null;
+  html_url: string;
+}
+
 const GitHubProfileViewer = () => {
-  const [username, setUsername] = useState('');
-  const [profile, setProfile] = useState<any>(null);
-  const [repos, setRepos] = useState<any[]>([]);
-  const [error, setError] = useState('');
+  const [username, setUsername] = useState<string>('');
+  const [profile, setProfile] = useState<GitHubProfile | null>(null);
+  const [repos, setRepos] = useState<Repository[]>([]);
+  const [error, setError] = useState<string>('');
 
   const handleSearch = async () => {
     setError(''); // Clear previous errors
@@ -22,11 +40,11 @@ const GitHubProfileViewer = () => {
       if (!profileResponse.ok) {
         throw new Error('User not found');
       }
-      const profileData = await profileResponse.json();
+      const profileData: GitHubProfile = await profileResponse.json();
       setProfile(profileData);
 
       const reposResponse = await fetch(profileData.repos_url);
-      const reposData = await reposResponse.json();
+      const reposData: Repository[] = await reposResponse.json();
       setRepos(reposData);
     } catch (error: any) {
       setError(error.message);
