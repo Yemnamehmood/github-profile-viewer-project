@@ -2,26 +2,121 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Apply basic styles for the page */
+body, html {
+  margin: 0;
+  padding: 0;
+  font-family: Arial, sans-serif;
+  background-color: #2d2d2d;
+  color: #f5ebeb;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+/* Background image */
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  background-image: url('/mohammad-rahmani-6tG4sQx0dh4-unsplash.jpg'); /* Your background image here */
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
+/* Container for the page */
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+/* Title styling */
+h1 {
+  font-size: 36px;
+  margin-bottom: 20px;
+}
+
+/* Input container */
+.input-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+/* Input field styling */
+.input-field {
+  padding: 10px;
+  width: 100%;
+  max-width: 400px;
+  margin-bottom: 10px;
+  border: 1px solid #f8f0f0;
+  border-radius: 5px;
+  background-color: #1a1a1a;
+  color: #f3eeee;
+}
+
+/* Button styling */
+.search-button {
+  padding: 10px 20px;
+  background-color: #444;
+  color: rgb(233, 226, 226);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.search-button:hover {
+  background-color: #666;
+}
+
+/* Profile container styling */
+.profile-container {
+  background-color: rgba(0, 0, 0, 0.8);
+  padding: 20px;
+  border-radius: 8px;
+  max-width: 600px;
+  width: 100%;
+}
+
+h2, h3 {
+  margin-bottom: 10px;
+}
+
+/* Footer */
+footer {
+  margin-top: 30px;
+  font-size: 14px;
+  text-align: center;
+}
+
+/* Media queries for mobile responsiveness */
+@media only screen and (max-width: 768px) {
+  h1 {
+    font-size: 28px;
+  }
+
+  .profile-container {
+    padding: 15px;
+  }
+
+  .input-field, .search-button {
+    width: 100%;
+  }
+
+  .input-container {
+    width: 100%;
+    max-width: 100%;
   }
 }
+
+@media only screen and (max-width: 480px) {
+  h1 {
+    font-size: 24px;
+  }
+
+  .input-field, .search-button {
+    font-size: 14px;
+  }
+}
+
+
